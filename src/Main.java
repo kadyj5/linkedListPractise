@@ -9,61 +9,80 @@ record City(String name, int distance){
 }
 
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
-    private static ListIterator listIterator;
+    private final static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
+        menu();
         LinkedList<City> linkedList = new LinkedList<>();
-//        new City("Sidney", 0);
-        City city1 = new City("Adelaide", 1374);
+
+        City city1 = new City("Warsaw", 1374);
+        City city2 = new City("Krakow", 1274);
+        City cityStart = new City("Sidney", 0);
+
+        linkedList.addFirst(cityStart);
         addPlace(linkedList,city1);
-//        linkedList.add(new City("Alice Springs", 2771));
-//        linkedList.add(new City("Perth", 917));
-//        linkedList.add(new City("Darwin", 3972));
-        linkedList.sort(Comparator.comparingInt(City::distance));
+        addPlace(linkedList,city2);
+        ListIterator listIterator = linkedList.listIterator();
+
+        System.out.println(linkedList);
         boolean isOn = true;
         while(isOn){
-            String option = scanner.nextLine().trim();
+            String option = scanner.nextLine().trim().toUpperCase();
             switch (option){
-                case "F" -> forward(linkedList);
-                case "B" -> backward(linkedList);
-                case "L" -> listPlaces(linkedList);
-                case "M" ->
-                case "Q" -> isOn = false;
+                case "F" -> forward(linkedList,listIterator);
+                case "B" -> backward(linkedList,listIterator);
+                case "L" -> listPlaces(linkedList,listIterator);
+                case "M" -> menu();
+                case "Q", default -> isOn = false;
             }
         }
     }
 
     private static void addPlace(LinkedList<City> list, City city){
         for(City c : list){
-            if(!c.name().equalsIgnoreCase(city.name())) {
-                list.add(city);
+            if(c.name().equalsIgnoreCase(city.name())) {
+                System.out.println("Alread exists!");
+                return;
+//
             }
         }
+        list.add(city);
+        list.sort(Comparator.comparingInt(City::distance));
     }
     private static void menu(){
-        System.out.println();
+        System.out.println("""
+                select action:
+                (F)orward
+                (B)ackwards
+                (L)ist Places
+                (M)enu
+                (Q)uit
+                """);
     }
 
-    private static void listPlaces(LinkedList<City> linkedList) {
-        listIterator = linkedList.listIterator(1);
-        while (listIterator.hasNext()){
-            System.out.println(listIterator.next());
+    private static void listPlaces(LinkedList<City> linkedList,ListIterator<City> iterator ) {
+        int back = 0;
+        while (iterator.hasNext()){
+            back++;
+            System.out.println(iterator.next());
+        }
+        while (back > 0){
+            iterator.previous();
+            back--;
         }
     }
 
-    private static void backward(LinkedList<City> linkedList) {
-        listIterator = linkedList.listIterator();
-        if(listIterator.hasPrevious()){
-            listIterator.previous();
+    private static void backward(LinkedList<City> linkedList,ListIterator<City> iterator) {
+        if(iterator.hasPrevious()){
+            iterator.previous();
+            System.out.println("moved backwards to another city");
         }
     }
-    private static void forward(LinkedList<City> linkedList){
-
-        listIterator = linkedList.listIterator();
-        if(listIterator.hasNext()){
-            listIterator.next();
+    private static void forward(LinkedList<City> linkedList,ListIterator<City> iterator){
+        if(iterator.hasNext()){
+            iterator.next();
+            System.out.println("moved forward to another city");
         }
     }
 
